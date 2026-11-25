@@ -15,10 +15,19 @@ import os
 ENTRY = "you closed the lid at 23:41. the cursor is still blinking at the end of your sentence."
 
 
+def validate_entry(text: str) -> str:
+    """Hold the line to the sealed gate: UTF-8 text, 1-200 chars, not blank."""
+    cleaned = text.strip()
+    if not cleaned:
+        raise ValueError("entry must not be only whitespace")
+    if not 1 <= len(cleaned) <= 200:
+        raise ValueError(f"entry must be 1-200 chars, got {len(cleaned)}")
+    cleaned.encode("utf-8")  # raises if not valid UTF-8 text
+    return cleaned
+
+
 def main() -> None:
-    text = ENTRY.strip()
-    assert 1 <= len(text) <= 200, f"entry must be 1-200 chars, got {len(text)}"
-    assert text.strip() == text and text, "entry must not be only whitespace"
+    text = validate_entry(ENTRY)
     out_dir = os.environ.get("MAKEFUN_OUTPUT_DIR", "/output")
     os.makedirs(out_dir, exist_ok=True)
     path = os.path.join(out_dir, "entry.txt")
